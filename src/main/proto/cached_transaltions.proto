@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+
+service CachedTranslation {
+    rpc GetTranslations (TranslationRequest) returns (TranslationReply) {}
+}
+
+
+message TranslationRequest {
+    repeated string texts = 1;
+    string targetLanguage = 2;
+    string sourceLanguage = 3;
+}
+
+message Translation {
+    string translatedText = 1;
+    string detectedSourceLanguage = 2;
+    string input = 3;
+}
+
+message TranslationReply {
+    repeated Translation translations = 1;
+}
