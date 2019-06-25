@@ -62,20 +62,6 @@ sourceSets {
 
 startScripts.enabled = false
 
-task helloWorldServer(type: CreateStartScripts) {
-    mainClassName = 'HelloWorldServer'
-    applicationName = 'hello-world-server'
-    outputDir = new File(project.buildDir, 'tmp')
-    classpath = startScripts.classpath
-}
-
-task helloWorldClient(type: CreateStartScripts) {
-    mainClassName = 'HelloWorldClient'
-    applicationName = 'hello-world-client'
-    outputDir = new File(project.buildDir, 'tmp')
-    classpath = startScripts.classpath
-}
-
 task cachedTranslationsServer(type: CreateStartScripts) {
     mainClassName = 'CachedTranslationsServer'
     applicationName = 'cached-translations-server'
@@ -91,8 +77,6 @@ task cachedTranslationsClient(type: CreateStartScripts) {
 }
 
 applicationDistribution.into('bin') {
-    from(helloWorldServer)
-    from(helloWorldClient)
     from(cachedTranslationsServer)
     from(cachedTranslationsClient)
     fileMode = 0755

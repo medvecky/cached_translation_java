@@ -1,11 +1,13 @@
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class CachedTranslationsServer {
-    private static final Logger logger = Logger.getLogger(HelloWorldServer.class.getName());
+    private static final Logger logger = Logger.getLogger(CachedTranslationsServer.class.getName());
 
     private Server server;
 
@@ -13,7 +15,7 @@ public class CachedTranslationsServer {
         /* The port on which the server should run */
         int port = 50051;
         server = ServerBuilder.forPort(port)
-                .addService(new HelloWorldServer.GreeterImpl())
+                .addService(new CachedTranslationImpl())
                 .build()
                 .start();
         logger.info("Server started, listening on " + port);
@@ -41,5 +43,40 @@ public class CachedTranslationsServer {
         if (server != null) {
             server.awaitTermination();
         }
+    }
+
+
+    static class CachedTranslationImpl extends CachedTranslationGrpc.CachedTranslationImplBase {
+
+        @Override
+        public void getTranslations(
+                CachedTranslations.TranslationRequest request,
+                StreamObserver<CachedTranslations.TranslationReply> responseObserver) {
+
+            CachedTranslations.Translation translation = CachedTranslations
+                    .Translation
+                    .newBuilder()
+                    .setTranslatedText(request.getTexts(0) + " Translated")
+                    .setDetectedSourceLanguage(request.getSourceLanguage() + " handled")
+                    .setInput(request.getTargetLanguage() + " handled")
+                    .build();
+
+            ArrayList<CachedTranslations.Translation> translations = new ArrayList<>();
+            translations.add(translation);
+            CachedTranslations.TranslationReply reply =
+                    CachedTranslations
+                            .TranslationReply
+                            .newBuilder()
+                            .addAllTranslations(translations)
+                            .build();
+            responseObserver.onNext(reply);
+            responseObserver.onCompleted();
+        }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        final CachedTranslationsServer server = new CachedTranslationsServer();
+        server.start();
+        server.blockUntilShutdown();
     }
 }
