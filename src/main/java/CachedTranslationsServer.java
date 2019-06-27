@@ -4,6 +4,7 @@ import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class CachedTranslationsServer {
@@ -53,16 +54,23 @@ public class CachedTranslationsServer {
                 CachedTranslations.TranslationRequest request,
                 StreamObserver<CachedTranslations.TranslationReply> responseObserver) {
 
-            CachedTranslations.Translation translation = CachedTranslations
-                    .Translation
-                    .newBuilder()
-                    .setTranslatedText(request.getTexts(0) + " Translated")
-                    .setDetectedSourceLanguage(request.getSourceLanguage() + " handled")
-                    .setInput(request.getTargetLanguage() + " handled")
-                    .build();
+            CloudTranslationsService cloudTranslationsService = new CloudTranslationsService();
 
-            ArrayList<CachedTranslations.Translation> translations = new ArrayList<>();
-            translations.add(translation);
+            List<CachedTranslations.Translation> translations = new ArrayList<>();
+
+            if (request.getSourceLanguage() != "") {
+                translations = cloudTranslationsService.translate(
+                        request.getTextsList(),
+                        request.getTargetLanguage(),
+                        request.getSourceLanguage());
+
+            } else {
+                translations = cloudTranslationsService.translate(
+                        request.getTextsList(),
+                        request.getTargetLanguage());
+            }
+
+
             CachedTranslations.TranslationReply reply =
                     CachedTranslations
                             .TranslationReply
