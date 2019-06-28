@@ -7,13 +7,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CachedTranslationsClient {
-    private static final Logger logger = Logger.getLogger(CachedTranslationsServer.class.getName());
+public class CachedTranslationClient {
+    private static final Logger logger = Logger.getLogger(CachedTranslationServer.class.getName());
 
     private final ManagedChannel channel;
     private final CachedTranslationGrpc.CachedTranslationBlockingStub blockingStub;
 
-    public CachedTranslationsClient(String host, int port) {
+    public CachedTranslationClient(String host, int port) {
         this(ManagedChannelBuilder.forAddress(host, port)
                 // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
                 // needing certificates.
@@ -21,7 +21,7 @@ public class CachedTranslationsClient {
                 .build());
     }
 
-    CachedTranslationsClient(ManagedChannel channel) {
+    CachedTranslationClient(ManagedChannel channel) {
         this.channel = channel;
         blockingStub = CachedTranslationGrpc.newBlockingStub(channel);
     }
@@ -33,7 +33,7 @@ public class CachedTranslationsClient {
 
     public void getTranslations() {
         logger.info("Will try get info from server");
-        CachedTranslations.TranslationRequest request = CachedTranslations
+        CachedTranslationOuterClass.TranslationRequest request = CachedTranslationOuterClass
                 .TranslationRequest
                 .newBuilder()
                 .setSourceLanguage("Source from request")
@@ -41,7 +41,7 @@ public class CachedTranslationsClient {
                 .addAllTexts(Arrays.asList("Text from request"))
                 .build();
 
-        CachedTranslations.TranslationReply response;
+        CachedTranslationOuterClass.TranslationReply response;
         try {
             response = blockingStub.getTranslations(request);
         } catch (StatusRuntimeException e) {
@@ -54,7 +54,7 @@ public class CachedTranslationsClient {
     }
 
     public static void main(String[] args) throws Exception {
-        CachedTranslationsClient client = new CachedTranslationsClient("localhost", 50051);
+        CachedTranslationClient client = new CachedTranslationClient("localhost", 50051);
         try {
 
             client.getTranslations();

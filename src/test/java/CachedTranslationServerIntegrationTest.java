@@ -1,6 +1,6 @@
 import org.junit.Test;
 
-public class CachedTranslationsServerIntegrationTest {
+public class CachedTranslationServerIntegrationTest {
     @Test
     public void test() {
 

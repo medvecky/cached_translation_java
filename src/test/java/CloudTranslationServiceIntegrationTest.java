@@ -6,23 +6,23 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class CloudTranslationsServiceIntegrationTest {
+public class CloudTranslationServiceIntegrationTest {
 
-    CloudTranslationsService cloudTranslationsService = new CloudTranslationsService();
+    CloudTranslationService cloudTranslationService = new CloudTranslationService();
 
     List<String> texts = Arrays.asList("Hello world", "Hello guys");
 
     @Test
     public void translateWithSource() {
 
-        List<CachedTranslations.Translation> translations = cloudTranslationsService.translate(
+        List<CachedTranslationOuterClass.Translation> translations = cloudTranslationService.translate(
                 texts,
                 "ru",
                 "en");
 
         assertThat(translations.size(), is(2));
 
-        CachedTranslations.Translation translation = translations.get(0);
+        CachedTranslationOuterClass.Translation translation = translations.get(0);
         assertThat(translation.getTranslatedText(), is("Привет, мир"));
         assertThat(translation.getDetectedSourceLanguage(), is("en"));
         assertThat(translation.getInput(), is("Hello world"));
@@ -36,13 +36,13 @@ public class CloudTranslationsServiceIntegrationTest {
     @Test
     public void translateWithoutSource() {
 
-        List<CachedTranslations.Translation> translations = cloudTranslationsService.translate(
+        List<CachedTranslationOuterClass.Translation> translations = cloudTranslationService.translate(
                 texts,
                 "ru");
 
         assertThat(translations.size(), is(2));
 
-        CachedTranslations.Translation translation = translations.get(0);
+        CachedTranslationOuterClass.Translation translation = translations.get(0);
         assertThat(translation.getTranslatedText(), is("Привет, мир"));
         assertThat(translation.getDetectedSourceLanguage(), is("en"));
         assertThat(translation.getInput(), is("Hello world"));
