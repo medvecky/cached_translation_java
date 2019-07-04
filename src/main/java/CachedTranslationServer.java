@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 
 public class CachedTranslationServer {
     private static final Logger logger = Logger.getLogger(CachedTranslationServer.class.getName());
-    private static final CloudTranslationService cloudTranslationService = new CloudTranslationService();
-    private static final RedisCache redisCache = new RedisCache();
+//    private static final CloudTranslationService cloudTranslationService = new CloudTranslationService();
+//    private static final RedisCache redisCache = new RedisCache();
 
     private Server server;
 
@@ -52,33 +52,47 @@ public class CachedTranslationServer {
 
 
     static class CachedTranslationImpl extends CachedTranslationGrpc.CachedTranslationImplBase {
+        private static CloudTranslationService cloudTranslationService;
+        private static RedisCache redisCache;
+
+        public CachedTranslationImpl() {
+            cloudTranslationService = new CloudTranslationService();
+            redisCache = new RedisCache();
+        }
+
+        public CachedTranslationImpl(
+                CloudTranslationService cloudTranslationService,
+                RedisCache redisCache) {
+            this.cloudTranslationService = cloudTranslationService;
+            this.redisCache = redisCache;
+        }
 
         @Override
         public void getTranslations(
                 CachedTranslationOuterClass.TranslationRequest request,
                 StreamObserver<CachedTranslationOuterClass.TranslationReply> responseObserver) {
 
+            CacheCheckResult cacheCheckResult = redisCache.getFromCache(
+                    request.getTextsList(),
+                    request.getSourceLanguage(),
+                    request.getTargetLanguage());
 
-            List<CachedTranslationOuterClass.Translation> translations = new ArrayList<>();
+            Map<String, TranslationData> cloudTranslations = getCloudTranslationAndSaveToCache(
+                    request,
+                    cacheCheckResult.getNotTranslatedTexts());
 
-            if (!request.getSourceLanguage().equals("")) {
-                translations = cloudTranslationService.translate(
-                        request.getTextsList(),
-                        request.getTargetLanguage(),
-                        request.getSourceLanguage());
+//            logger.info("Data from cache " + cacheCheckResult.getCachedTranslations().keySet().toString());
+//            logger.info("Data from cloud " + cloudTranslations.keySet().toString());
 
-            } else {
-                translations = cloudTranslationService.translate(
-                        request.getTextsList(),
-                        request.getTargetLanguage());
-            }
+            List<CachedTranslationOuterClass.Translation> resultTranslations =
+                    mergeTranslations(request, cacheCheckResult.getCachedTranslations(), cloudTranslations);
 
 
             CachedTranslationOuterClass.TranslationReply reply =
                     CachedTranslationOuterClass
                             .TranslationReply
                             .newBuilder()
-                            .addAllTranslations(translations)
+                            .addAllTranslations(resultTranslations)
                             .build();
             responseObserver.onNext(reply);
             responseObserver.onCompleted();

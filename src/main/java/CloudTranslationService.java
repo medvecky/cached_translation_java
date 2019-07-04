@@ -22,9 +22,7 @@ public class CloudTranslationService {
                 Translate.TranslateOption.targetLanguage(targetLanguage),
                 Translate.TranslateOption.sourceLanguage(sourceLanguage));
 
-        List<CachedTranslationOuterClass.Translation> translations = buildTranslationsResponse(texts, servicesTranslations);
-
-        return translations;
+        return buildTranslationsResponse(texts, servicesTranslations);
     }
 
     public List<CachedTranslationOuterClass.Translation> translate(List<String> texts, String targetLanguage) {
@@ -32,12 +30,10 @@ public class CloudTranslationService {
                 texts,
                 Translate.TranslateOption.targetLanguage(targetLanguage));
 
-        List<CachedTranslationOuterClass.Translation> translations = buildTranslationsResponse(texts, servicesTranslations);
-
-        return translations;
+        return buildTranslationsResponse(texts, servicesTranslations);
     }
 
-    private List<CachedTranslationOuterClass.Translation> buildTranslationsResponse(
+    public List<CachedTranslationOuterClass.Translation> buildTranslationsResponse(
             List<String> texts,
             List<Translation> servicesTranslations) {
         List<CachedTranslationOuterClass.Translation> translations = new ArrayList<>();

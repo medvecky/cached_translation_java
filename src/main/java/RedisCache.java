@@ -25,6 +25,10 @@ public class RedisCache {
         syncCommands = connection.sync();
     }
 
+    public RedisCache(RedisCommands<String, String> syncCommands) {
+        this.syncCommands = syncCommands;
+    }
+
     public void saveToCache(
             List<CachedTranslationOuterClass.Translation> translations,
             String source,
@@ -108,7 +112,6 @@ public class RedisCache {
 
         }
 
-        CacheCheckResult cacheCheckResult = new CacheCheckResult(cachedTranslations, notTranslatedTexts);
-        return cacheCheckResult;
+        return new CacheCheckResult(cachedTranslations, notTranslatedTexts);
     }
 }
