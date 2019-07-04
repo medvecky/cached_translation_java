@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 
 public class CachedTranslationServer {
     private static final Logger logger = Logger.getLogger(CachedTranslationServer.class.getName());
-//    private static final CloudTranslationService cloudTranslationService = new CloudTranslationService();
-//    private static final RedisCache redisCache = new RedisCache();
 
     private Server server;
 
@@ -63,8 +61,8 @@ public class CachedTranslationServer {
         public CachedTranslationImpl(
                 CloudTranslationService cloudTranslationService,
                 RedisCache redisCache) {
-            this.cloudTranslationService = cloudTranslationService;
-            this.redisCache = redisCache;
+            CachedTranslationImpl.cloudTranslationService = cloudTranslationService;
+            CachedTranslationImpl.redisCache = redisCache;
         }
 
         @Override
