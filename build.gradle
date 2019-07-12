@@ -1,10 +1,10 @@
 plugins {
     // Provide convenience executables for trying out the examples.
-    id 'application'
+    id "application"
     // ASSUMES GRADLE 2.12 OR HIGHER. Use plugin version 0.7.5 with earlier gradle versions
-    id 'com.google.protobuf' version '0.8.8'
+    id "com.google.protobuf" version "0.8.8"
     // Generate IntelliJ IDEA's .idea & .iml project files
-    id 'idea'
+    id "idea"
 }
 
 repositories {
@@ -16,37 +16,32 @@ repositories {
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-// IMPORTANT: You probably want the non-SNAPSHOT version of gRPC. Make sure you
-// are looking at a tagged version of the example and not "master"!
-
-// Feel free to delete the comment at the next line. It is just for safely
-// updating the version in our release process.
-def grpcVersion = '1.21.0' // CURRENT_GRPC_VERSION
-def protobufVersion = '3.7.1'
+def grpcVersion = "1.21.0" // CURRENT_GRPC_VERSION
+def protobufVersion = "3.7.1"
 def protocVersion = protobufVersion
 
 dependencies {
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    compile "io.grpc:grpc-protobuf:${grpcVersion}"
+    compile "io.grpc:grpc-stub:${grpcVersion}"
     compileOnly "javax.annotation:javax.annotation-api:1.2"
 
     // examples/advanced need this for JsonFormat
-    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
-    compile 'com.google.cloud:google-cloud-translate:1.78.0'
+    compile "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+    compile "com.google.cloud:google-cloud-translate:1.78.0"
+    compile "com.fasterxml.jackson.core:jackson-core:2.9.8"
+    compile "com.fasterxml.jackson.core:jackson-annotations:2.9.8"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.8"
+    compile "io.lettuce:lettuce-core:5.1.7.RELEASE"
 
     runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
 
-    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
-    testImplementation "junit:junit:4.12"
-    testImplementation "org.mockito:mockito-core:2.25.1"
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-    compile 'io.lettuce:lettuce-core:5.1.7.RELEASE'
+    testCompile "io.grpc:grpc-testing:${grpcVersion}"
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.25.1"
     testCompile "org.hamcrest:hamcrest-library:2.1"
-    testCompile 'org.powermock:powermock:1.6.5'
-    testCompile 'org.powermock:powermock-api-mockito2:2.0.2'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.5'
+    testCompile "org.powermock:powermock:1.6.5"
+    testCompile "org.powermock:powermock-api-mockito2:2.0.2"
+    testCompile "org.powermock:powermock-module-junit4:1.6.5"
     
 }
 
@@ -64,30 +59,30 @@ protobuf {
 sourceSets {
     main {
         java {
-            srcDirs 'build/generated/source/proto/main/grpc'
-            srcDirs 'build/generated/source/proto/main/java'
+            srcDirs "build/generated/source/proto/main/grpc"
+            srcDirs "build/generated/source/proto/main/java"
         }
     }
 }
 
 startScripts.enabled = false
 
-task cachedTranslationsServer(type: CreateStartScripts) {
-    mainClassName = 'CachedTranslationServer'
-    applicationName = 'cached-translation-server'
-    outputDir = new File(project.buildDir, 'tmp')
+task cachedTranslationServer(type: CreateStartScripts) {
+    mainClassName = "CachedTranslationServer"
+    applicationName = "cached-translation-server"
+    outputDir = new File(project.buildDir, "tmp")
     classpath = startScripts.classpath
 }
 
-task cachedTranslationsClient(type: CreateStartScripts) {
-    mainClassName = 'CachedTranslationClient'
-    applicationName = 'cached-translation-client'
-    outputDir = new File(project.buildDir, 'tmp')
+task cachedTranslationClient(type: CreateStartScripts) {
+    mainClassName = "CachedTranslationClient"
+    applicationName = "cached-translation-client"
+    outputDir = new File(project.buildDir, "tmp")
     classpath = startScripts.classpath
 }
 
-applicationDistribution.into('bin') {
-    from(cachedTranslationsServer)
-    from(cachedTranslationsClient)
+applicationDistribution.into("bin") {
+    from(cachedTranslationServer)
+    from(cachedTranslationClient)
     fileMode = 0755
 }
